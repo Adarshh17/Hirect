@@ -3,6 +3,10 @@ import { useAuth } from '@/contexts/AuthContext';
 import { JobApplication } from '@/types/job';
 import { JobCard } from '@/components/jobs/JobCard';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Header } from '@/components/layout/Header';
+import { Button } from '@/components/ui/button';
+import { Link } from 'react-router-dom';
+import { ArrowLeft } from 'lucide-react';
 
 const MyApplications: React.FC = () => {
   const [applications, setApplications] = useState<JobApplication[]>([]);
@@ -38,56 +42,68 @@ const MyApplications: React.FC = () => {
   const pendingApplications = applications.filter(app => app.status !== 'accepted' && app.status !== 'rejected');
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-8">My Applications</h1>
-      {loading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {Array.from({ length: 6 }).map((_, index) => (
-            <Skeleton key={index} className="h-48 w-full" />
-          ))}
+    <div className="min-h-screen bg-background">
+      <Header />
+      <main className="container mx-auto px-4 py-8">
+        <div className="flex items-center justify-between mb-8">
+          <h1 className="text-3xl font-bold">My Applications</h1>
+          <Link to="/dashboard">
+            <Button variant="outline" className="flex items-center gap-2">
+              <ArrowLeft className="h-4 w-4" />
+              Back to Dashboard
+            </Button>
+          </Link>
         </div>
-      ) : (
-        <>
-          <section className="mb-12">
-            <h2 className="text-2xl font-bold mb-4 text-green-500">Accepted Applications</h2>
-            {acceptedApplications.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {acceptedApplications.map(app => (
-                  <JobCard key={app.id} job={app.job} status={app.status} />
-                ))}
-              </div>
-            ) : (
-              <p>No accepted applications yet.</p>
-            )}
-          </section>
 
-          <section className="mb-12">
-            <h2 className="text-2xl font-bold mb-4 text-red-500">Rejected Applications</h2>
-            {rejectedApplications.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {rejectedApplications.map(app => (
-                  <JobCard key={app.id} job={app.job} status={app.status} />
-                ))}
-              </div>
-            ) : (
-              <p>No rejected applications yet.</p>
-            )}
-          </section>
+        {loading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {Array.from({ length: 6 }).map((_, index) => (
+              <Skeleton key={index} className="h-48 w-full" />
+            ))}
+          </div>
+        ) : (
+          <>
+            <section className="mb-12">
+              <h2 className="text-2xl font-bold mb-4 text-green-500">Accepted Applications</h2>
+              {acceptedApplications.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {acceptedApplications.map(app => (
+                    <JobCard key={app.id} job={app.job} status={app.status} />
+                  ))}
+                </div>
+              ) : (
+                <p>No accepted applications yet.</p>
+              )}
+            </section>
 
-          <section>
-            <h2 className="text-2xl font-bold mb-4">Pending Applications</h2>
-            {pendingApplications.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {pendingApplications.map(app => (
-                  <JobCard key={app.id} job={app.job} status={app.status} />
-                ))}
-              </div>
-            ) : (
-              <p>No pending applications.</p>
-            )}
-          </section>
-        </>
-      )}
+            <section className="mb-12">
+              <h2 className="text-2xl font-bold mb-4 text-red-500">Rejected Applications</h2>
+              {rejectedApplications.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {rejectedApplications.map(app => (
+                    <JobCard key={app.id} job={app.job} status={app.status} />
+                  ))}
+                </div>
+              ) : (
+                <p>No rejected applications yet.</p>
+              )}
+            </section>
+
+            <section>
+              <h2 className="text-2xl font-bold mb-4">Pending Applications</h2>
+              {pendingApplications.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {pendingApplications.map(app => (
+                    <JobCard key={app.id} job={app.job} status={app.status} />
+                  ))}
+                </div>
+              ) : (
+                <p>No pending applications.</p>
+              )}
+            </section>
+          </>
+        )}
+      </main>
     </div>
   );
 };
