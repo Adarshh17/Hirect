@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Header } from '@/components/layout/Header';
 
-const MyDashboard = () => {
+const Analysis = () => {
   const { token } = useAuth();
   const [visualizations, setVisualizations] = useState({
     salary_vs_experience_plot: '',
@@ -36,7 +36,7 @@ const MyDashboard = () => {
     <div>
       <Header />
       <main className="container mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold mb-8">My Dashboard</h1>
+        <h1 className="text-3xl font-bold mb-8">Analysis</h1>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div className="bg-card border border-border rounded-lg p-4">
             <h2 className="text-xl font-semibold mb-4">Salary vs. Experience</h2>
@@ -62,4 +62,4 @@ const MyDashboard = () => {
   );
 };
 
-export default MyDashboard;
+export default Analysis;

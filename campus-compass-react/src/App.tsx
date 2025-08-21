@@ -9,7 +9,7 @@ import { AuthPage } from "@/components/auth/AuthPage";
 import { JobDashboard } from "@/pages/JobDashboard";
 import { JobDetail } from "@/pages/JobDetail";
 import MyApplications from "@/pages/MyApplications";
-import MyDashboard from "@/pages/MyDashboard";
+import Analysis from "@/pages/Analysis";
 
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
@@ -41,9 +41,9 @@ const App = () => (
                 <MyApplications />
               </ProtectedRoute>
             } />
-            <Route path="/my-dashboard" element={
+            <Route path="/analysis" element={
               <ProtectedRoute>
-                <MyDashboard />
+                <Analysis />
               </ProtectedRoute>
             } />
             

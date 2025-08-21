@@ -10,7 +10,7 @@ const Index = () => {
 
   // Redirect authenticated users to their appropriate dashboard
   if (isAuthenticated) {
-    return <Navigate to={user?.role === 'poster' ? '/poster-dashboard' : '/dashboard'} replace />;
+    return <Navigate to={'/dashboard'} replace />;
   }
 
   return (

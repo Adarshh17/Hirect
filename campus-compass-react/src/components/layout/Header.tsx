@@ -33,8 +33,8 @@ export const Header: React.FC = () => {
             <Link to="/my-applications">
               <Button variant="outline" size="sm">My Applications</Button>
             </Link>
-            <Link to="/my-dashboard">
-              <Button variant="outline" size="sm">My Dashboard</Button>
+            <Link to="/analysis">
+              <Button variant="outline" size="sm">Analysis</Button>
             </Link>
             <Button 
               variant="outline" 

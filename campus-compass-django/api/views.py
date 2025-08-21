@@ -75,72 +75,75 @@ class MyApplicationsView(generics.ListAPIView):
 
     def get_queryset(self):
         return JobApplication.objects.filter(applicant=self.request.user)
-
 class JobSeekerDashboardView(APIView):
     permission_classes = [IsAuthenticated]
     authentication_classes = [TokenAuthentication]
 
     def get(self, request, *args, **kwargs):
+        # Set a consistent theme for all plots
+        sns.set_theme(style="whitegrid", palette="pastel")
+
         # Data for visualizations
         jobs = Job.objects.all()
         job_data = pd.DataFrame(list(jobs.values('experience_level', 'salary', 'location')))
 
-        # Map experience level to numerical values
-        experience_map = {'entry': 1, 'mid': 2, 'senior': 3}
-        job_data['experience_numeric'] = job_data['experience_level'].map(experience_map)
-        job_data.dropna(subset=['salary', 'experience_numeric'], inplace=True)
+        # Ensure data is cleaned
+        job_data.dropna(subset=['salary', 'experience_level'], inplace=True)
 
-
-        # 1. Salary vs. Experience Level
+        # 1. Improved Salary vs. Experience Level: Use violin plot for better distribution visibility
+        # Violin plots combine boxplot and density, showing spread and density better than scatter + regression
         plt.figure(figsize=(10, 6))
-        sns.scatterplot(data=job_data, x='experience_numeric', y='salary')
-        
-        # Linear Regression
-        X = job_data[['experience_numeric']].values
-        y = job_data['salary'].values
-        if len(X) > 0:
-            model = LinearRegression()
-            model.fit(X, y)
-            plt.plot(X, model.predict(X), color='red')
-        
-        plt.title('Salary vs. Experience Level')
-        plt.xlabel('Experience Level')
-        plt.ylabel('Salary')
-        plt.xticks(ticks=list(experience_map.values()), labels=list(experience_map.keys()))
+        sns.violinplot(data=job_data, x='experience_level', y='salary', order=['entry', 'mid', 'senior'], inner='quartile')
+        plt.title('Salary Distribution by Experience Level', fontsize=14)
+        plt.xlabel('Experience Level', fontsize=12)
+        plt.ylabel('Salary', fontsize=12)
+        plt.xticks(fontsize=10)
+        plt.yticks(fontsize=10)
         
         salary_exp_path = os.path.join(settings.MEDIA_ROOT, 'visualizations', 'salary_vs_experience.png')
         os.makedirs(os.path.dirname(salary_exp_path), exist_ok=True)
-        plt.savefig(salary_exp_path)
+        plt.savefig(salary_exp_path, dpi=300, bbox_inches='tight')
         plt.close()
 
-        # 2. Salary Distribution by Location
+        # 2. Improved Salary Distribution by Location: Enhance boxplot with swarmplot for individual data points
+        # This adds visibility to data density without overlapping too much
         plt.figure(figsize=(12, 7))
-        sns.boxplot(data=job_data, x='location', y='salary')
-        plt.title('Salary Distribution by Location')
-        plt.xlabel('Location')
-        plt.ylabel('Salary')
-        plt.xticks(rotation=45)
+        sns.boxplot(data=job_data, x='location', y='salary', width=0.5)
+        sns.swarmplot(data=job_data, x='location', y='salary', color=".2", size=4, alpha=0.7)
+        plt.title('Salary Distribution by Location', fontsize=14)
+        plt.xlabel('Location', fontsize=12)
+        plt.ylabel('Salary', fontsize=12)
+        plt.xticks(rotation=45, ha='right', fontsize=10)
+        plt.yticks(fontsize=10)
         
         salary_loc_path = os.path.join(settings.MEDIA_ROOT, 'visualizations', 'salary_by_location.png')
         os.makedirs(os.path.dirname(salary_loc_path), exist_ok=True)
-        plt.savefig(salary_loc_path)
+        plt.savefig(salary_loc_path, dpi=300, bbox_inches='tight')
         plt.close()
 
         # Data for My Applications
         applications = JobApplication.objects.filter(applicant=request.user)
         app_data = pd.DataFrame(list(applications.values('status', 'applied_at')))
 
-        # 3. Application Status Breakdown
+        # 3. Improved Application Status Breakdown: Use bar chart instead of pie for better readability and comparison
+        # Bars are easier to label and compare, especially if statuses increase
+        app_status_path = None
         if not app_data.empty and 'status' in app_data:
-            plt.figure(figsize=(8, 8))
-            app_data['status'].value_counts().plot.pie(autopct='%1.1f%%')
-            plt.title('My Application Status')
-            plt.ylabel('')
+            status_counts = app_data['status'].value_counts()
+            plt.figure(figsize=(8, 6))
+            sns.barplot(x=status_counts.index, y=status_counts.values)
+            plt.title('My Application Status Breakdown', fontsize=14)
+            plt.xlabel('Status', fontsize=12)
+            plt.ylabel('Count', fontsize=12)
+            plt.xticks(fontsize=10, rotation=45)
+            plt.yticks(fontsize=10)
+            for i, v in enumerate(status_counts.values):
+                plt.text(i, v + 0.1, str(v), ha='center', fontsize=10)
+            
             app_status_path = os.path.join(settings.MEDIA_ROOT, 'visualizations', f'user_{request.user.id}_application_status.png')
-            plt.savefig(app_status_path)
+            os.makedirs(os.path.dirname(app_status_path), exist_ok=True)
+            plt.savefig(app_status_path, dpi=300, bbox_inches='tight')
             plt.close()
-        else:
-            app_status_path = None
 
         return Response({
             'salary_vs_experience_plot': request.build_absolute_uri(settings.MEDIA_URL + 'visualizations/salary_vs_experience.png'),
