@@ -85,7 +85,7 @@ class JobSeekerDashboardView(APIView):
 
         # Data for visualizations
         jobs = Job.objects.all()
-        job_data = pd.DataFrame(list(jobs.values('experience_level', 'salary', 'location')))
+        job_data = pd.DataFrame(list(jobs.values('experience_level', 'salary', 'location', 'company')))
 
         # Ensure data is cleaned
         job_data.dropna(subset=['salary', 'experience_level'], inplace=True)
@@ -158,42 +158,23 @@ class JobSeekerDashboardView(APIView):
             plt.savefig(app_status_path, dpi=300, bbox_inches='tight')
             plt.close()
 
-        # 4. Predicted vs. Average Actual Salary
-        predicted_salary_path = None
-        model = None
-        if 'experience_numeric' in job_data.columns and not job_data.empty:
-            X = job_data[['experience_numeric']].values
-            y = job_data['salary'].values
-            if len(X) > 0:
-                model = LinearRegression()
-                model.fit(X, y)
-
-        if model:
-            # Calculate average actual salary per experience level
-            avg_actual_salary = job_data.groupby('experience_level')['salary'].mean().reindex(['entry', 'mid', 'senior'])
-            
-            # Get model's predicted salary for each experience level
-            exp_levels_numeric = pd.Series([1, 2, 3], index=['entry', 'mid', 'senior'])
-            predicted_salaries = pd.Series(model.predict(exp_levels_numeric.values.reshape(-1, 1)), index=exp_levels_numeric.index)
-
-            # Create DataFrame for plotting
-            comparison_df = pd.DataFrame({'Actual': avg_actual_salary, 'Predicted': predicted_salaries})
-            
-            plt.figure(figsize=(10, 6))
-            comparison_df.plot(kind='bar', figsize=(10, 6))
-            plt.title('Predicted vs. Average Actual Salary')
-            plt.ylabel('Salary')
-            plt.xlabel('Experience Level')
-            plt.xticks(rotation=0)
-            
-            predicted_salary_path = os.path.join(settings.MEDIA_ROOT, 'visualizations', 'predicted_salary.png')
-            os.makedirs(os.path.dirname(predicted_salary_path), exist_ok=True)
-            plt.savefig(predicted_salary_path)
-            plt.close()
+        # 4. Job Postings by Company
+        plt.figure(figsize=(12, 7))
+        sns.countplot(data=job_data, y='company', order=job_data['company'].value_counts().index)
+        plt.title('Job Postings by Company', fontsize=14)
+        plt.xlabel('Number of Job Postings', fontsize=12)
+        plt.ylabel('Company', fontsize=12)
+        plt.xticks(fontsize=10)
+        plt.yticks(fontsize=10)
+        
+        company_postings_path = os.path.join(settings.MEDIA_ROOT, 'visualizations', 'company_postings.png')
+        os.makedirs(os.path.dirname(company_postings_path), exist_ok=True)
+        plt.savefig(company_postings_path, dpi=300, bbox_inches='tight')
+        plt.close()
 
         return Response({
             'salary_vs_experience_plot': request.build_absolute_uri(settings.MEDIA_URL + 'visualizations/salary_vs_experience.png'),
             'salary_by_location_plot': request.build_absolute_uri(settings.MEDIA_URL + 'visualizations/salary_by_location.png'),
             'application_status_plot': request.build_absolute_uri(settings.MEDIA_URL + f'visualizations/user_{request.user.id}_application_status.png') if app_status_path else None,
-            'predicted_salary_plot': request.build_absolute_uri(settings.MEDIA_URL + 'visualizations/predicted_salary.png') if predicted_salary_path else None,
+            'company_postings_plot': request.build_absolute_uri(settings.MEDIA_URL + 'visualizations/company_postings.png'),
         })

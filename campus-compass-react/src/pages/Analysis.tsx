@@ -8,7 +8,7 @@ const Analysis = () => {
     salary_vs_experience_plot: '',
     salary_by_location_plot: '',
     application_status_plot: '',
-    predicted_salary_plot: '',
+    company_postings_plot: '',
   });
 
   useEffect(() => {
@@ -59,8 +59,8 @@ const Analysis = () => {
           </div>
           <div className="bg-card border border-border rounded-lg p-4">
             <h2 className="text-xl font-semibold mb-4">Predicted vs. Average Actual Salary</h2>
-            {visualizations.predicted_salary_plot && (
-              <img src={visualizations.predicted_salary_plot} alt="Predicted vs. Average Actual Salary" />
+            {visualizations.company_postings_plot && (
+              <img src={visualizations.company_postings_plot} alt="Job Postings by Company" />
             )}
           </div>
         </div>
