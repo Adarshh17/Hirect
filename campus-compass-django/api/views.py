@@ -95,15 +95,23 @@ class JobSeekerDashboardView(APIView):
         job_data['experience_numeric'] = job_data['experience_level'].map(experience_map)
         job_data.dropna(subset=['salary', 'experience_numeric'], inplace=True)
 
-        # 1. Improved Salary vs. Experience Level: Use violin plot for better distribution visibility
-        # Violin plots combine boxplot and density, showing spread and density better than scatter + regression
+        # 1. Salary vs. Experience Level with Linear Regression
         plt.figure(figsize=(10, 6))
-        sns.violinplot(data=job_data, x='experience_level', y='salary', order=['entry', 'mid', 'senior'], inner='quartile')
-        plt.title('Salary Distribution by Experience Level', fontsize=14)
+        sns.scatterplot(data=job_data, x='experience_numeric', y='salary', alpha=0.6)
+        plt.title('Salary vs. Experience Level', fontsize=14)
         plt.xlabel('Experience Level', fontsize=12)
         plt.ylabel('Salary', fontsize=12)
-        plt.xticks(fontsize=10)
+        plt.xticks(ticks=list(experience_map.values()), labels=list(experience_map.keys()), fontsize=10)
         plt.yticks(fontsize=10)
+
+        model = None
+        if 'experience_numeric' in job_data.columns and not job_data.empty:
+            X = job_data[['experience_numeric']].values
+            y = job_data['salary'].values
+            if len(X) > 1: # Need at least 2 points for a line
+                model = LinearRegression()
+                model.fit(X, y)
+                plt.plot(X, model.predict(X), color='red', linewidth=2)
         
         salary_exp_path = os.path.join(settings.MEDIA_ROOT, 'visualizations', 'salary_vs_experience.png')
         os.makedirs(os.path.dirname(salary_exp_path), exist_ok=True)
