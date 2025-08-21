@@ -90,6 +90,11 @@ class JobSeekerDashboardView(APIView):
         # Ensure data is cleaned
         job_data.dropna(subset=['salary', 'experience_level'], inplace=True)
 
+        # Map experience level to numerical values
+        experience_map = {'entry': 1, 'mid': 2, 'senior': 3}
+        job_data['experience_numeric'] = job_data['experience_level'].map(experience_map)
+        job_data.dropna(subset=['salary', 'experience_numeric'], inplace=True)
+
         # 1. Improved Salary vs. Experience Level: Use violin plot for better distribution visibility
         # Violin plots combine boxplot and density, showing spread and density better than scatter + regression
         plt.figure(figsize=(10, 6))
@@ -145,8 +150,42 @@ class JobSeekerDashboardView(APIView):
             plt.savefig(app_status_path, dpi=300, bbox_inches='tight')
             plt.close()
 
+        # 4. Predicted vs. Average Actual Salary
+        predicted_salary_path = None
+        model = None
+        if 'experience_numeric' in job_data.columns and not job_data.empty:
+            X = job_data[['experience_numeric']].values
+            y = job_data['salary'].values
+            if len(X) > 0:
+                model = LinearRegression()
+                model.fit(X, y)
+
+        if model:
+            # Calculate average actual salary per experience level
+            avg_actual_salary = job_data.groupby('experience_level')['salary'].mean().reindex(['entry', 'mid', 'senior'])
+            
+            # Get model's predicted salary for each experience level
+            exp_levels_numeric = pd.Series([1, 2, 3], index=['entry', 'mid', 'senior'])
+            predicted_salaries = pd.Series(model.predict(exp_levels_numeric.values.reshape(-1, 1)), index=exp_levels_numeric.index)
+
+            # Create DataFrame for plotting
+            comparison_df = pd.DataFrame({'Actual': avg_actual_salary, 'Predicted': predicted_salaries})
+            
+            plt.figure(figsize=(10, 6))
+            comparison_df.plot(kind='bar', figsize=(10, 6))
+            plt.title('Predicted vs. Average Actual Salary')
+            plt.ylabel('Salary')
+            plt.xlabel('Experience Level')
+            plt.xticks(rotation=0)
+            
+            predicted_salary_path = os.path.join(settings.MEDIA_ROOT, 'visualizations', 'predicted_salary.png')
+            os.makedirs(os.path.dirname(predicted_salary_path), exist_ok=True)
+            plt.savefig(predicted_salary_path)
+            plt.close()
+
         return Response({
             'salary_vs_experience_plot': request.build_absolute_uri(settings.MEDIA_URL + 'visualizations/salary_vs_experience.png'),
             'salary_by_location_plot': request.build_absolute_uri(settings.MEDIA_URL + 'visualizations/salary_by_location.png'),
             'application_status_plot': request.build_absolute_uri(settings.MEDIA_URL + f'visualizations/user_{request.user.id}_application_status.png') if app_status_path else None,
+            'predicted_salary_plot': request.build_absolute_uri(settings.MEDIA_URL + 'visualizations/predicted_salary.png') if predicted_salary_path else None,
         })
