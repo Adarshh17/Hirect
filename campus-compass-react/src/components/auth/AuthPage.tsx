@@ -5,8 +5,8 @@ import { LoginForm } from './LoginForm';
 import { SignUpForm } from './SignUpForm';
 import { Briefcase } from 'lucide-react';
 
-export const AuthPage: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'login' | 'signup'>('login');
+export const AuthPage = () => {
+  const [activeTab, setActiveTab] = useState('login');
 
   return (
     <div className="min-h-screen bg-gradient-subtle flex items-center justify-center p-4">
@@ -26,7 +26,7 @@ export const AuthPage: React.FC = () => {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'login' | 'signup')}>
+            <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value)}>
               <TabsList className="grid w-full grid-cols-2">
                 <TabsTrigger value="login">Sign In</TabsTrigger>
                 <TabsTrigger value="signup">Sign Up</TabsTrigger>

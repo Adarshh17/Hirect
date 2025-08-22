@@ -7,10 +7,9 @@ import { Textarea } from '@/components/ui/textarea';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Job, ApplicationFormData } from '@/types/job';
 import { useToast } from '@/hooks/use-toast';
 import { Upload, FileText, Loader2 } from 'lucide-react';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '../../contexts/AuthContext';
 
 const applicationSchema = z.object({
   fullName: z.string().min(2, 'Full name must be at least 2 characters'),
@@ -19,23 +18,17 @@ const applicationSchema = z.object({
   coverLetter: z.string().min(50, 'Cover letter must be at least 50 characters'),
 });
 
-interface ApplicationModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  job: Job;
-}
-
-export const ApplicationModal: React.FC<ApplicationModalProps> = ({ 
-  isOpen, 
-  onClose, 
-  job 
+export const ApplicationModal = ({
+  isOpen,
+  onClose,
+  job
 }) => {
   const [loading, setLoading] = useState(false);
-  const [resume, setResume] = useState<File | null>(null);
+  const [resume, setResume] = useState(null);
   const { user, token } = useAuth();
   const { toast } = useToast();
 
-  const form = useForm<Omit<ApplicationFormData, 'resume'>>({
+  const form = useForm({
     resolver: zodResolver(applicationSchema),
     defaultValues: {
       fullName: user?.firstName ? `${user.firstName} ${user.lastName || ''}`.trim() : '',
@@ -45,7 +38,7 @@ export const ApplicationModal: React.FC<ApplicationModalProps> = ({
     },
   });
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = (event) => {
     const file = event.target.files?.[0];
     if (file) {
       // Validate file type and size
@@ -74,7 +67,7 @@ export const ApplicationModal: React.FC<ApplicationModalProps> = ({
     }
   };
 
-  const onSubmit = async (data: Omit<ApplicationFormData, 'resume'>) => {
+  const onSubmit = async (data) => {
     if (!resume) {
       toast({
         variant: "destructive",
@@ -105,7 +98,7 @@ export const ApplicationModal: React.FC<ApplicationModalProps> = ({
       if (!response.ok) {
         throw new Error('Application failed');
       }
-      
+
       toast({
         title: "Application submitted!",
         description: `Your application for ${job.title} at ${job.company} has been submitted successfully.`,

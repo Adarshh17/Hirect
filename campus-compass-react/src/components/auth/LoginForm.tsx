@@ -8,7 +8,6 @@ import { Label } from '@/components/ui/label';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
-import { LoginCredentials } from '@/types/auth';
 import { Loader2 } from 'lucide-react';
 
 const loginSchema = z.object({
@@ -16,13 +15,13 @@ const loginSchema = z.object({
   password: z.string().min(6, 'Password must be at least 6 characters'),
 });
 
-export const LoginForm: React.FC = () => {
+export const LoginForm = () => {
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
 
-  const form = useForm<LoginCredentials>({
+  const form = useForm({
     resolver: zodResolver(loginSchema),
     defaultValues: {
       email: '',
@@ -30,7 +29,7 @@ export const LoginForm: React.FC = () => {
     },
   });
 
-  const onSubmit = async (data: LoginCredentials) => {
+  const onSubmit = async (data) => {
     setLoading(true);
     try {
       const response = await fetch('http://localhost:8000/api/login/', {
@@ -65,7 +64,7 @@ export const LoginForm: React.FC = () => {
       toast({
         variant: "destructive",
         title: "Sign in failed",
-        description: (error as Error).message || "Please check your credentials and try again.",
+        description: error.message || "Please check your credentials and try again.",
       });
     } finally {
       setLoading(false);

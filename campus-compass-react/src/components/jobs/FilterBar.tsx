@@ -1,21 +1,17 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 
-interface FilterBarProps {
-  onFilterChange: (filters: { [key: string]: string }) => void;
-  locations: string[];
-}
+export const FilterBar = ({ onFilterChange, locations }) => {
+  const [localFilters, setLocalFilters] = useState({});
 
-export const FilterBar: React.FC<FilterBarProps> = ({ onFilterChange, locations }) => {
-  const [localFilters, setLocalFilters] = useState<{ [key: string]: string }>({});
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (e) => {
     setLocalFilters({ ...localFilters, title: e.target.value });
   };
 
-  const handleSelectChange = (name: string, value: string) => {
+  const handleSelectChange = (name, value) => {
     setLocalFilters({ ...localFilters, [name]: value });
   };
 
@@ -42,4 +38,10 @@ export const FilterBar: React.FC<FilterBarProps> = ({ onFilterChange, locations 
       </div>
     </div>
   );
+};
+
+// Optional: Add prop-types for runtime validation in JavaScript
+FilterBar.propTypes = {
+  onFilterChange: PropTypes.func.isRequired,
+  locations: PropTypes.arrayOf(PropTypes.string).isRequired,
 };

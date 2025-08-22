@@ -2,19 +2,12 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Job } from '@/types/job';
 import { MapPin, Clock, Building2, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { formatDistanceToNow } from 'date-fns';
-
-interface JobCardProps {
-  job: Job;
-  status?: string;
-}
-
-export const JobCard: React.FC<JobCardProps> = ({ job, status }) => {
-  const getJobTypeBadge = (type: string) => {
-    const variants: Record<string, string> = {
+import PropTypes from 'prop-types';
+export const JobCard = ({ job, status }) => {
+  const getJobTypeBadge = (type) => {
+    const variants = {
       'Full-time': 'default',
       'Part-time': 'secondary',
       'Contract': 'outline',
@@ -23,7 +16,7 @@ export const JobCard: React.FC<JobCardProps> = ({ job, status }) => {
     return variants[type] || 'default';
   };
 
-  const statusColor = status === 'accepted' ? 'border-green-500' : status === 'rejected' ? 'border-red-500' : ''
+  const statusColor = status === 'accepted' ? 'border-green-500' : status === 'rejected' ? 'border-red-500' : '';
 
   return (
     <Card className={`job-card group cursor-pointer ${statusColor}`}>
@@ -38,12 +31,12 @@ export const JobCard: React.FC<JobCardProps> = ({ job, status }) => {
               <span className="font-medium">{job.company}</span>
             </div>
           </div>
-          <Badge variant={getJobTypeBadge(job.jobType) as any}>
+          <Badge variant={getJobTypeBadge(job.jobType)}>
             {job.jobType}
           </Badge>
         </div>
       </CardHeader>
-      
+
       <CardContent>
         <div className="space-y-3">
           <div className="flex items-center gap-4 text-sm text-muted-foreground">
@@ -56,21 +49,21 @@ export const JobCard: React.FC<JobCardProps> = ({ job, status }) => {
               <span>{new Date(job.posted_at).toLocaleDateString()}</span>
             </div>
           </div>
-          
+
           {job.experienceLevel && (
             <div className="flex items-center gap-2">
               <span className="text-sm text-muted-foreground">Experience:</span>
               <Badge variant="outline">{job.experienceLevel}</Badge>
             </div>
           )}
-          
+
           {job.salary && (
             <div className="text-sm">
               <span className="text-muted-foreground">Salary: </span>
               <span className="font-medium text-primary">₹{job.salary}</span>
             </div>
           )}
-          
+
           <div className="pt-2">
             <Link to={`/job/${job.id}`}>
               <Button className="w-full group-hover:bg-primary-dark transition-colors" disabled={job.is_applied || status === 'accepted'}>

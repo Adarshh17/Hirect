@@ -8,7 +8,6 @@ import { Label } from '@/components/ui/label';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
-import { SignUpData } from '@/types/auth';
 import { Loader2 } from 'lucide-react';
 
 const signUpSchema = z.object({
@@ -18,13 +17,13 @@ const signUpSchema = z.object({
   lastName: z.string().min(1, 'Last name is required'),
 });
 
-export const SignUpForm: React.FC = () => {
+export const SignUpForm = () => {
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
 
-  const form = useForm<SignUpData>({
+  const form = useForm({
     resolver: zodResolver(signUpSchema),
     defaultValues: {
       email: '',
@@ -34,7 +33,7 @@ export const SignUpForm: React.FC = () => {
     },
   });
 
-  const onSubmit = async (data: SignUpData) => {
+  const onSubmit = async (data) => {
     setLoading(true);
     try {
       const response = await fetch('http://localhost:8000/api/signup/', {
@@ -73,7 +72,7 @@ export const SignUpForm: React.FC = () => {
       toast({
         variant: "destructive",
         title: "Sign up failed",
-        description: (error as Error).message || "There was an error creating your account. Please try again.",
+        description: error.message || "There was an error creating your account. Please try again.",
       });
     } finally {
       setLoading(false);

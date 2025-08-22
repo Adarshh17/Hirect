@@ -1,13 +1,8 @@
 import React from 'react';
-import { Job } from '@/types/job';
+import PropTypes from 'prop-types';
 import { JobCard } from './JobCard';
 
-interface JobListProps {
-  jobs: Job[];
-  loading?: boolean;
-}
-
-export const JobList: React.FC<JobListProps> = ({ jobs, loading = false }) => {
+export const JobList = ({ jobs, loading = false }) => {
   if (loading) {
     return (
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -41,4 +36,10 @@ export const JobList: React.FC<JobListProps> = ({ jobs, loading = false }) => {
       ))}
     </div>
   );
+};
+
+// Optional: Add prop-types for runtime validation in JavaScript
+JobList.propTypes = {
+  jobs: PropTypes.arrayOf(PropTypes.object).isRequired,
+  loading: PropTypes.bool,
 };
