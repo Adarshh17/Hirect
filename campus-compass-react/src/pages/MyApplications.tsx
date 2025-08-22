@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { JobApplication } from '@/types/job';
 import { JobCard } from '@/components/jobs/JobCard';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Header } from '@/components/layout/Header';
@@ -8,8 +7,8 @@ import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 
-const MyApplications: React.FC = () => {
-  const [applications, setApplications] = useState<JobApplication[]>([]);
+const MyApplications = () => {
+  const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
   const { token } = useAuth();
 

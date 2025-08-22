@@ -5,12 +5,11 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { FileText, Briefcase } from 'lucide-react';
-import { Job, JobApplication } from '@/types/job';
 import { FilterBar } from '@/components/jobs/FilterBar';
 
-export const JobDashboard: React.FC = () => {
+export const JobDashboard = () => {
   const { user, token } = useAuth();
-  const [jobs, setJobs] = useState<Job[]>([]);
+  const [jobs, setJobs] = useState([]);
   const [applicationCount, setApplicationCount] = useState(0);
   const [filters, setFilters] = useState({});
 
@@ -60,7 +59,7 @@ export const JobDashboard: React.FC = () => {
     }
   }, [token, filters]);
 
-  const handleFilterChange = (newFilters: any) => {
+  const handleFilterChange = (newFilters) => {
     setFilters(newFilters);
   };
 

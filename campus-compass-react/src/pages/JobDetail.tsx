@@ -1,17 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { Header } from '@/components/layout/Header';
-import { Job } from '@/types/job';
 import { Button } from '@/components/ui/button';
 import { Briefcase, MapPin, Calendar, DollarSign, Building, Info, IndianRupee } from 'lucide-react';
 import { ApplicationModal } from '@/components/jobs/ApplicationModal';
 import { useAuth } from '@/contexts/AuthContext';
 
-export const JobDetail: React.FC = () => {
-  const { id } = useParams<{ id: string }>();
-  const [job, setJob] = useState<Job | null>(null);
+export const JobDetail = () => {
+  const { id } = useParams();
+  const [job, setJob] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { token } = useAuth();
 
