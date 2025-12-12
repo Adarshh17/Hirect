@@ -1,0 +1,15 @@
+**Backend (Django)**
+
+*   **Django**: A high-level Python web framework that encourages rapid development and clean, pragmatic design. It's used for the core backend logic, including models, views, and URL routing.
+*   **Django REST Framework**: A powerful and flexible toolkit for building Web APIs. It's used to create the RESTful API endpoints that the React frontend consumes.
+*   **Django Filters**: A reusable Django application for allowing users to filter querysets dynamically. It's used to power the filtering functionality on the job listings.
+*   **SQLite**: A C-language library that implements a small, fast, self-contained, high-reliability, full-featured, SQL database engine. It's the default database for Django and is used for local development.
+
+**Frontend (React)**
+
+*   **React**: A JavaScript library for building user interfaces. It's used to create the interactive and dynamic user interface of the application.
+*   **Vite**: A build tool that aims to provide a faster and leaner development experience for modern web projects. It's used for the frontend development server and build process.
+*   **Tailwind CSS**: A utility-first CSS framework for rapidly building custom user interfaces. It's used for styling the application.
+*   **ESLint**: A tool for identifying and reporting on patterns found in ECMAScript/JavaScript code. It's used to maintain code quality and consistency.
+*   **PostCSS**: A tool for transforming CSS with JavaScript. It's used in conjunction with Tailwind CSS.
+*   **shadcn/ui**: A collection of re-usable components that can be copied and pasted into your apps. It is likely used for the UI components in the project.

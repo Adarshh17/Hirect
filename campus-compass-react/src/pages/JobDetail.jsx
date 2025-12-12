@@ -95,10 +95,10 @@ export const JobDetail = () => {
               <MapPin className="h-5 w-5 text-primary" />
               <span>{job.location}</span>
             </div>
-            <div className="flex items-center gap-2">
+            {/* <div className="flex items-center gap-2">
               <Briefcase className="h-5 w-5 text-primary" />
               <span>{job.jobType || 'N/A'}</span>
-            </div>
+            </div> */}
             <div className="flex items-center gap-2">
               <Calendar className="h-5 w-5 text-primary" />
               <span>Posted on {new Date(job.posted_at).toLocaleDateString()}</span>
