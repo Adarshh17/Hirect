@@ -9,6 +9,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
+import { api } from '@/lib/api.js';
 
 const signUpSchema = z.object({
   email: z.string().email('Please enter a valid email address'),
@@ -36,7 +37,7 @@ export const SignUpForm = () => {
   const onSubmit = async (data) => {
     setLoading(true);
     try {
-      const response = await fetch('http://localhost:8000/api/signup/', {
+      const response = await fetch(api.endpoints.auth.signup, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
