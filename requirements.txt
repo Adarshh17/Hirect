@@ -10,4 +10,4 @@ seaborn
 scikit-learn
 pandas
 numpy
-gunicorn
+gunicorn==21.3.0
